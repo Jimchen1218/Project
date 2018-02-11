@@ -12,15 +12,8 @@ import os
 import sys
 import tensorflow as tf
 import cv2
-
-from matplotlib import pyplot as plt
 from PIL import Image
-
-
 import gc
-
-import label_map_util
-import visualization_utils as vis_util
 
 print(__doc__)
 
@@ -37,7 +30,6 @@ sys.path.append("..")
 
 FOLDER_MODEL_NAME = 'rfcn_resnet101'
 PATH_TO_CKPT = FOLDER_MODEL_NAME + '/frozen_inference_graph.pb'
-PATH_TO_LABELS = os.path.join('data', 'pascalface_label_map.pbtxt')
 NUM_CLASSES = 1
   
 #open a image 
@@ -52,10 +44,6 @@ def img_get_height_width(image):
 		ret_h,ret_w = image.shape[:2]
 		print("img_get_width_height width:%d,height:%d\n"%(ret_w,ret_h))
 		return ret_h,ret_w
-
-def mask_build(image):
-		ret_mask = np.zeros(image.shape[:2], np.uint8)
-		return ret_mask
 
 def img_bgr2gray(image):
 		gray=cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
@@ -156,9 +144,6 @@ with detection_graph.as_default():
     od_graph_def.ParseFromString(serialized_graph)
     tf.import_graph_def(od_graph_def, name='')
 
-label_map = label_map_util.load_labelmap(PATH_TO_LABELS)
-categories = label_map_util.convert_label_map_to_categories(label_map, max_num_classes=NUM_CLASSES, use_display_name=True)
-category_index = label_map_util.create_category_index(categories)
   
 def load_image_into_numpy_array(image):
   (im_width, im_height) = image.size
@@ -203,7 +188,7 @@ def main():
     fileslist_in_dir = os.listdir(full_dir_path)
     files_count = len(fileslist_in_dir)
     print("main files_count:%s\n"%(files_count))
-    TEST_IMAGE_PATHS = [ os.path.join(PATH_TO_TEST_IMAGES_DIR, 'image{}.jpg'.format(i)) for i in range(0,files_count) ]
+    TEST_IMAGE_PATHS = [ os.path.join(PATH_TO_TEST_IMAGES_DIR, fileslist_in_dir[i]) for i in range(0,files_count) ]
     #IMAGE_SIZE = (8, 8)
     with detection_graph.as_default():
         with tf.Session(graph=detection_graph) as sess:
@@ -225,14 +210,14 @@ def main():
                 image_np_expanded = np.expand_dims(image_np, axis=0)
                 (boxes, scores, classes, num) = sess.run([detection_boxes, detection_scores, detection_classes, num_detections],feed_dict={image_tensor: image_np_expanded})
 
-                print("boxes:%s\n"%(boxes))
-                print("boxes[0]:%s\n"%(boxes[0]))
-                print("boxes[0][0]:%s\n"%(boxes[0][0])) 
-                print("boxes[0][0][0]:%s\n"%(boxes[0][0][0]))
+                #print("boxes:%s\n"%(boxes))
+                #print("boxes[0]:%s\n"%(boxes[0]))
+                #print("boxes[0][0]:%s\n"%(boxes[0][0])) 
+                #print("boxes[0][0][0]:%s\n"%(boxes[0][0][0]))
                 
-                print("scores:%s\n"%(scores))
-                print("image_scores[0]:%s\n"%(scores[0]))
-                print("image_scores[0][0]:%s\n"%(scores[0][0]))
+                #print("scores:%s\n"%(scores))
+                #print("image_scores[0]:%s\n"%(scores[0]))
+                #print("image_scores[0][0]:%s\n"%(scores[0][0]))
                 
                 generate_imgs(image,image_name,image_np,boxes,scores)
                 print("run success!!!")
