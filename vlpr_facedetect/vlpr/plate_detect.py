@@ -12,7 +12,7 @@ import cache
 
 
 
-watch_cascade = cv2.CascadeClassifier('cascade.xml')
+watch_cascade = cv2.CascadeClassifier('model\\cascade.xml')
 
 
 def computeSafeRegion(shape,bounding_rect):

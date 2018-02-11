@@ -9,6 +9,7 @@ import niblack_thresholding as nt
 import finemapping_vertical as fv
 import plate_detect as pd
 import cache
+import os
 
 
 def plate_recognizechar(image,resize_h = 720):
@@ -59,24 +60,36 @@ def plate_recognizechar(image,resize_h = 720):
     return json.dumps(jsons,ensure_ascii=False)
     
 def carplate_recognize(imgname):
-		image = cv2.imread(imgname)
-		print("detect_and_boundingbox height:",image.shape[0])
-		print("detect_and_boundingbox width:",image.shape[1])
-		if image.shape[0] < 180:
-			resize_h = 90
-		if image.shape[0] < 360:
-			resize_h = 180
-		elif image.shape[0] < 720:
-			resize_h = 360
-		elif image.shape[0] > 1440:
-			resize_h = int(image.shape[0])
-		else:
-			resize_h = 720
-		images = plate_recognizechar(image,resize_h)
+    image = cv2.imread(imgname)
+    print("carplate_recognize height:",image.shape[0])
+    #if image.shape[0] < 180:
+    #    resize_h = 90
+    #if image.shape[0] < 360:
+    #    resize_h = image.shape[0]
+    #elif image.shape[0] < 720:
+    #    resize_h = 360
+    #elif image.shape[0] > 1440:
+    #    resize_h = int(image.shape[0])
+    #else:
+    #    resize_h = 720
+    resize_h = int(image.shape[0])
+    images = plate_recognizechar(image,resize_h)
+    print("main images:%s\n"%(images))
+
+
 
 if __name__ == '__main__':
-		print("__main__ start!!")
-		carplate_recognize('111.jpg')
+    PATH_TO_TEST_IMAGES_DIR = 'images\\'
+    print("__main__ start!!")
+    cwd_dir = os.getcwd()
+    full_dir_path = cwd_dir + "\\"+PATH_TO_TEST_IMAGES_DIR
+    fileslist_in_dir = os.listdir(full_dir_path)
+    files_count = len(fileslist_in_dir)
+    print("main files_count:%s\n"%(files_count))
+    TEST_IMAGE_PATHS = [ os.path.join(PATH_TO_TEST_IMAGES_DIR, fileslist_in_dir[i]) for i in range(0,files_count) ]  
+    for image_path in TEST_IMAGE_PATHS:
+        print("main image_path:%s\n"%(image_path))
+        carplate_recognize(image_path)
     
     
       
